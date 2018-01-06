@@ -1,7 +1,7 @@
 from ahplib import Comparison
 import numpy as np
 
-# Goal: choose job
+# Goal: choose job (from https://www.pmi.org/learning/library/analytic-hierarchy-process-prioritize-projects-6608)
 lvl_1_crit_names = ('stakeholders', 'finance', 'strategic', 'other')
 L1 = np.array([[1,1/5,1/9,1],
                 [5,1,1,5],

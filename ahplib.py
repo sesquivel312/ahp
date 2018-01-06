@@ -149,7 +149,7 @@ class Comparison:
             comparison_matrix(numpy.array): the upper right portion of the comparison matrix (above diagonal)
             parent(Comparison): Parent Comparison object
         """
-        
+
         self.criteria_names = criteria_names
         self.parent = parent
         # todo: check for mismatch between # names and size of matrix
