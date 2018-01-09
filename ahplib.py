@@ -1,6 +1,12 @@
+#todo: some way to caclulate final weights - likely involves grah traversal
+
 import sys
 
 import numpy as np
+
+# copied random index table from AHP tutorial doc, the None at position 0 eliminates the off-by-one
+# problem -- matrix size starts at 1, list index starts at 0)
+ri_lookup = [None, 0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 11.49]
 
 class Comparison:
     """
@@ -13,9 +19,10 @@ class Comparison:
     todo: switch priority vector and lambda calcs from approximate average method to using accurate linear algebra
     """
 
-    # copied random index table from AHP tutorial doc, the None at position 0 eliminates the off-by-one
-    # problem -- matrix size starts at 1, list index starts at 0)
-    ri_lookup = [None, 0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 11.49]
+
+    comparison_matrix = None
+    local_weight = 0  # 0 indicates no weight, not a value of 0
+    global_weight = 0  # 0 means same as for local_weight
 
     def create_col_sum_vector(self, M):
         """
@@ -138,7 +145,11 @@ class Comparison:
 
         return C  # just return the matrix as is for now, later will need to fill in the lower left submatrix
 
-    def __init__(self, criteria_names, comparison_matrix, parent):
+    def add_child(self, name):
+        new_child = Comparison(name, parent=self)
+        self.children.append(new_child)
+
+    def __init__(self, name, parent=None, children=[]):
         """
         initialize the object with provided data and data derived from it
 
@@ -150,17 +161,31 @@ class Comparison:
             parent(Comparison): Parent Comparison object
         """
 
-        self.criteria_names = criteria_names
+        self.name = name
         self.parent = parent
-        # todo: check for mismatch between # names and size of matrix
-        self.size = len(criteria_names)
-        self.comparison_matrix = self.set_comparison_matrix(comparison_matrix)
-        self.colsum = self.create_col_sum_vector(self.comparison_matrix)
-        self.normal_comparison_matrix = self.normalize_criteria_matrix(self.comparison_matrix, self.colsum)
-        self.priority_vector = self.calc_priority_vector(self.normal_comparison_matrix)
-        self.lmax = self.calc_lambda_max(self.colsum, self.priority_vector)
-        self.ri = self.ri_lookup[self.size]
-        self.ci = self.calc_consistency_idx(self.lmax, self.size)
-        self.cr = self.calc_consistency_ratio(self.ci, self.ri)
+        self.children = children
 
-#todo: some way to caclulate final weights - likely involves grah traversal
+        # todo: check for mismatch between # names and size of matrix
+        # self.size = len(criteria_names)
+        # self.comparison_matrix = self.set_comparison_matrix(comparison_matrix)
+        # self.colsum = self.create_col_sum_vector(self.comparison_matrix)
+        # self.normal_comparison_matrix = self.normalize_criteria_matrix(self.comparison_matrix, self.colsum)
+        # self.priority_vector = self.calc_priority_vector(self.normal_comparison_matrix)
+        # self.lmax = self.calc_lambda_max(self.colsum, self.priority_vector)
+        # self.ri = self.ri_lookup[self.size]
+        # self.ci = self.calc_consistency_idx(self.lmax, self.size)
+        # self.cr = self.calc_consistency_ratio(self.ci, self.ri)
+
+
+goal = Comparison('decide')
+
+print(goal.name)
+print(goal.parent)
+print(goal.children)
+
+goal.add_child('crit01')
+
+print(goal.name)
+print(goal.parent)
+print(goal.children)
+print()
