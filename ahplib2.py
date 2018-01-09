@@ -1,3 +1,5 @@
+# !!!! Refer to the worked examples in XL, the manual entries here correspond
+# to the toy example
 import sys
 
 import numpy as np
