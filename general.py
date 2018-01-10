@@ -1,4 +1,4 @@
-def traverse_tree(start_node, children_attribute='children', visited_nodes=[], leaf_nodes=[]):
+def traverse_tree(start_node, visited_nodes=[], leaf_nodes=[], children_attribute='children'):
     """
     traverse a tree of objects returning a list of all nodes and a list of only leaf nodes
          
@@ -12,11 +12,12 @@ def traverse_tree(start_node, children_attribute='children', visited_nodes=[], l
 
     """
 
+    children = getattr(start_node, children_attribute)
     visited_nodes.append(start_node)
 
-    if start_node.children:
-        for child in start_node.children:
-            traverse_tree(child, visited_nodes=visited_nodes, leaf_nodes=leaf_nodes)
+    if children:
+        for child in children:
+            traverse_tree(child, visited_nodes, leaf_nodes, children_attribute)
     else:
         leaf_nodes.append(start_node)
 

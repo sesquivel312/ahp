@@ -100,19 +100,25 @@ class Criteria:
         # self.alt_comparison_matrices = []  # list of comparison matricies, one per criteria, in criteria order
         # self.alt_pvs = []  # list of alt priority vectors, one per criteria, in criteria order
 
-    def add_children(self, criteria):
+    def add_children(self, children):
+        # todo factor this out to a general purpose library handling trees
+        # todo abstract to handle arbitrary names for the child and parent attribute of the objects involved?
+        # todo move this outside a class - i.e. it's a utility function for trees?
         """
         add a list of child Criteria to the children attribute
         
         Args:
-            criteria(list): list of Criteria objects that are children of this one
+            children(list): list of Criteria objects that are children of this one
 
         Returns(None):
 
         """
 
-        criteria.parent = self
-        self.children.extend(criteria)
+        self.children.extend(children)
+
+        for child in children:
+            child.parent = self
+
 
     def get_comparison_matrix(self, pairwise_comparisons=None):
 

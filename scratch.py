@@ -20,12 +20,14 @@ class Node:
             node.parent = self
 
 
-def traverse(start_node, visited_nodes=[], leaf_nodes=[]):
+def traverse(start_node, visited_nodes=[], leaf_nodes=[], children_attribute='children'):
+
+    children = getattr(start_node, children_attribute)
     visited_nodes.append(start_node)
 
-    if start_node.children:
-        for child in start_node.children:
-            traverse(child, visited_nodes, leaf_nodes)
+    if children:
+        for child in children:
+            traverse(child, visited_nodes=visited_nodes, leaf_nodes=leaf_nodes, children_attribute=children_attribute)
     else:
         leaf_nodes.append(start_node)
 

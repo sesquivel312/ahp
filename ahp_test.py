@@ -3,11 +3,16 @@ import numpy as np
 import ahplib2 as ahp
 from general import traverse_tree
 
+
+# todo add comparison matrix to each criteria
+# todo caclulate the normal comparison matrix and pv for each Criteria and store it - USING the tree
+# todo assign the local weight values to each criteria from the priority vectors
+# todo calculate  global weight for LEAF NODES using treel may need to customize traversal to get them "on the way down"
+
 c0 = ahp.Criteria('choose phone')
 c01 = ahp.Criteria('ram')
 c02 = ahp.Criteria('screen')
-c0.add_children(c01)
-c0.add_children(c02)
+c0.add_children([c01, c02])
 
 # manually create comparison matrix - must code a mechanism to
 # get this data from the user
@@ -28,26 +33,34 @@ c0.get_comparison_matrix(co_comparison_matrix)
 c0.col_sum_vector = ahp.create_col_sum_vector(c0.comparison_matrix)
 c0.normal_comparison_matrix = ahp.normalize_criteria_matrix(c0.comparison_matrix, c0.col_sum_vector)
 c0.priority_vector = ahp.calc_priority_vector(c0.normal_comparison_matrix)
-c0.get_alt_comparison_matrix(alt_compare_ram)
-c0.get_alt_comparison_matrix(alt_compare_screen)
+# c0.get_alt_comparison_matrix(alt_compare_ram)
+# c0.get_alt_comparison_matrix(alt_compare_screen)
 
-for i, alt in enumerate(c0.alt_comparison_matrices):
-    alt_col_sum = ahp.create_col_sum_vector(alt)
-    norm_alt = ahp.normalize_criteria_matrix(alt, alt_col_sum)
-    print('normed alt for index: ' + str(i))
-    print(norm_alt)
-    pv = ahp.calc_priority_vector(norm_alt)
-    c0.alt_pvs.append(pv)
+v, l = traverse_tree(c0)
+print('tree')
+for i in v:
+    print i.name
+print('leaves')
+for i in l:
+    print i.name
 
-for i, pv in enumerate(c0.alt_pvs):
-    print('pv for alt idx: ' + str(i))
-    print(pv)
-
-
-
-for i, child in enumerate(c0.children):
-    print('alt for ' + child.name)
-    print(c0.alt_comparison_matrices[i])
+# for i, alt in enumerate(c0.alt_comparison_matrices):
+#     alt_col_sum = ahp.create_col_sum_vector(alt)
+#     norm_alt = ahp.normalize_criteria_matrix(alt, alt_col_sum)
+#     print('normed alt for index: ' + str(i))
+#     print(norm_alt)
+#     pv = ahp.calc_priority_vector(norm_alt)
+#     c0.alt_pvs.append(pv)
+#
+# for i, pv in enumerate(c0.alt_pvs):
+#     print('pv for alt idx: ' + str(i))
+#     print(pv)
+#
+#
+#
+# for i, child in enumerate(c0.children):
+#     print('alt for ' + child.name)
+#     print(c0.alt_comparison_matrices[i])
 # print(alt_c01_compares)
 # print(alt_c02_compares)
 # print('c0 compare matrix')
