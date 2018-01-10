@@ -66,6 +66,26 @@ def calc_priority_vector(normal_comparison_matrix):
 class Criteria:
 
     def __init__(self, name):
+        # todo change to linear algebr to calculate accurate priority vectors, etc.
+        """
+        initialize a Criteria object for use in AHP calculations
+        
+        Currently uses approximate methods to obtain priority vectors
+        
+        Attributes created:
+            parent(Criteria): parent Criteria of this instance, if it has one
+            children(list): the child Criteria of this one, if there are any
+            comparison_matrix(np.array): the pairwise comparison matrix for the child Criteria in 'children'
+            normal_comparison_matrix(np.array): calculated from comparison_matrix using AHP technique
+            priority_vector(np.array): weight values calculated from normal_comaprison_matrix using AHP method
+            priority_vector(np.array): vector containing the per column sums from the normal_priority_matrix
+            local_weight(float): weight for this criteria at this level in the AHP hierarchy only
+            global_weight(float): the product of all local_weight values from this Criteria and all its parent Criteria
+            
+        
+        Args:
+            name(string): name of this criteria 
+        """
         self.name = name
         self.parent = None
         self.children = []
@@ -73,13 +93,26 @@ class Criteria:
         self.col_sum_vector = None
         self.normal_comparison_matrix = None
         self.priority_vector = None
-        self.weight = 0  # local weight, 0 indicates no weight rather than a value of zero
-        self.alt_comparison_matrices = []  # list of comparison matricies, one per criteria, in criteria order
-        self.alt_pvs = []  # list of alt priority vectors, one per criteria, in criteria order
+        self.global_weight = 0  # local weight, 0 indicates no weight rather than a value of zero
+        self.global_weight = 0  # local weight, 0 indicates no weight rather than a value of zero
 
-    def add_child(self, criteria):
+        # Factor alternative related items out of Criteria, otherwise will have multiple copies of same data
+        # self.alt_comparison_matrices = []  # list of comparison matricies, one per criteria, in criteria order
+        # self.alt_pvs = []  # list of alt priority vectors, one per criteria, in criteria order
+
+    def add_children(self, criteria):
+        """
+        add a list of child Criteria to the children attribute
+        
+        Args:
+            criteria(list): list of Criteria objects that are children of this one
+
+        Returns(None):
+
+        """
+
         criteria.parent = self
-        self.children.append(criteria)
+        self.children.extend(criteria)
 
     def get_comparison_matrix(self, pairwise_comparisons=None):
 
@@ -208,68 +241,3 @@ class Criteria:
         return ci / ri
 
 
-# not yet sure how to handle the alternatives (aka alts), maybe it should be a class, or something else?
-# manually creating it for now, format is {'alt_name': float_score}
-alts = {'alt01': 0.0, 'alt02':0.0}
-
-
-c0 = Criteria('decision')
-c01 = Criteria('crit01')
-c02 = Criteria('crit02')
-c0.add_child(c01)
-c0.add_child(c02)
-
-c0_matrix = np.array([[1.0000, 3.0000],
-                      [0.3333, 1.0000]])
-
-# comparisons of the alts for each criteria
-alt_c01_compares = np.array([[1, 7],
-                            [.142857, 1]])
-alt_c02_compares = np.array([[1,2],
-                             [.5,1]])
-
-c0.get_comparison_matrix(c0_matrix)
-c0.col_sum_vector = create_col_sum_vector(c0.comparison_matrix)
-c0.normal_comparison_matrix = normalize_criteria_matrix(c0.comparison_matrix, c0.col_sum_vector)
-c0.priority_vector = calc_priority_vector(c0.normal_comparison_matrix)
-c0.get_alt_comparison_matrix(alt_c01_compares)
-c0.get_alt_comparison_matrix(alt_c02_compares)
-
-for i, alt in enumerate(c0.alt_comparison_matrices):
-    alt_col_sum = create_col_sum_vector(alt)
-    norm_alt = normalize_criteria_matrix(alt, alt_col_sum)
-    print('normed alt for index: ' + str(i))
-    print(norm_alt)
-    pv = calc_priority_vector(norm_alt)
-    c0.alt_pvs.append(pv)
-
-for i, pv in enumerate(c0.alt_pvs):
-    print('pv for alt idx: ' + str(i))
-    print(pv)
-
-
-
-for i, child in enumerate(c0.children):
-    print('alt for ' + child.name)
-    print(c0.alt_comparison_matrices[i])
-# print(alt_c01_compares)
-# print(alt_c02_compares)
-# print('c0 compare matrix')
-# print(c0.comparison_matrix)
-# print('c0 sum vector')
-# print(c0.col_sum_vector)
-# print('c0.normal matrix')
-# print(c0.normal_comparison_matrix)
-# print('c0 pv')
-# print(c0.priority_vector)
-#
-#
-# print('name: {}, weight: {}'.format(c0.name, c0.weight))
-# print(c0.parent)
-# print(c0.children)
-# print('name: {}, weight: {}'.format(c01.name, c01.weight))
-# print(c01.parent)
-# print(c01.children)
-# print('name: {}, weight: {}'.format(c02.name, c02.weight))
-# print(c02.parent)
-# print(c02.children)
